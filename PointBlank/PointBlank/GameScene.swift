@@ -83,7 +83,9 @@ extension CGPoint {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "player")
-    
+    let jumpHeight = CGFloat(0.8)
+    let jumpSpeed = CGFloat(0.2)
+    let fallSpeed = CGFloat(1)
     
     override func didMoveToView(view: SKView) {
         
@@ -108,6 +110,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 SKAction.waitForDuration(4.0)
                 ])
             ))
+
     }
     
     
@@ -180,19 +183,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    
-    
-    
 //    @TODO Add collision points between player and monsters. Set that to be the lose condition.
 //    Set jump command to occur on touch here
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         
-        runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
+        //runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
+
+        if (player.position.y == size.height / 2.0){
+            jump();
+        }
         
         // 1 - Choose one of the touches to work with
         let touch = touches.anyObject() as UITouch
         let touchLocation = touch.locationInNode(self)
         
+    }
+    
+    func jump(){
+        let actionJump = SKAction.moveTo(CGPoint(x: player.position.x, y: size.height * jumpHeight), duration: NSTimeInterval(jumpSpeed))
+        let actionGravity = SKAction.moveTo(CGPoint(x: player.position.x, y: size.height / 2.0), duration: NSTimeInterval(fallSpeed))
+        
+        player.runAction(actionJump, completion: {self.player.runAction(actionGravity)})
     }
     
     
